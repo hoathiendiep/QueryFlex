@@ -1,0 +1,18 @@
+/* tr {
+    font-size: 0px;
+    white-space: nowrap;
+}
+th, td {
+    display: inline-block;
+}
+.content-column{
+    
+} */
+
+th, td {
+    min-width: 200px;
+}
+span {
+    text-transform: none;
+    font-size: medium;
+}

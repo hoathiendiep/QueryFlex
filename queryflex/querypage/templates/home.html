@@ -1,0 +1,186 @@
+{% load static %}
+{% csrf_token %}
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-gray-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QueryFlex</title>
+  <link rel="stylesheet" type="text/css" href="{% static 'assets/css/output.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'assets/css/home.css' %}">
+  <link rel="icon" type="image/png" href="{% static 'assets/img/brand/cat.png' %}">
+  <script type="text/javascript" src="{% static 'assets/js/home.js' %}"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> 
+
+  <!-- <link rel="stylesheet" href="querypage/static/assets/css/output.css">
+  <link rel="stylesheet" href="querypage/static/assets/css/home.css">
+  <script type="text/javascript" src="querypage/static/assets/js/home.js"></script> -->
+</head>
+<body class="bg-gray-100 flex flex-col min-h-screen">
+  <!-- Header -->
+  <header class="bg-white shadow p-4">
+      <div class="container mx-auto flex justify-between items-center">
+          <!-- Logo -->
+          <div class="flex items-center space-x-2">
+              <img src="{% static '/assets/img/brand/cat.png' %}" alt="Logo" class="w-10 h-10">
+              <span class="text-xl font-mono">QueryFlex</span>
+          </div>
+
+          <!-- Feedback Button -->
+          <button class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
+              Feedback
+          </button>
+      </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="container mx-auto flex-grow mt-8 p-4">
+        <!-- First Section -->
+        <section style="display: grid; grid-template-columns: 0.5fr auto 1fr; gap: 1rem; margin-bottom: 2rem;">
+          <div id="left-div" class="bg-gray-200 p-4 rounded shadow text-left flex flex-col max-h-[calc(100vh-2rem)] overflow-y-auto">
+              <div class="flex justify-between space-x-4 mb-4">
+                  <!-- Select Database Dropdown -->
+                  <!-- <div class="flex flex-col w-1/2">
+                      <label for="select-database" class="text-sm font-medium text-gray-700 text-left">Select Database</label>
+                      <select id="select-database" class="p-2 border rounded">
+                          <option value="database1">Database 1</option>
+                          <option value="database2">Database 2</option>
+                          <option value="database3">Database 3</option>
+                      </select>
+                  </div> -->
+      
+                  <!-- Select Query Type Dropdown -->
+                  <div class="flex flex-col w-1/2">
+                      <label for="select-query-type" class="text-sm font-medium text-gray-700 text-left">Select Query Type</label>
+                      <select id="select-query-type" class="p-2 border rounded">
+                          <option value="INSERT">INSERT</option>
+                          <!-- <option value="UPDATE">UPDATE</option> -->
+                      </select>
+                  </div>
+              </div>
+      
+              <!-- Code Section for SQL Query -->
+              <div class="flex flex-col mb-4 flex-grow">
+                <label for="sql-query" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Enter SQL Query</label>
+                <textarea id="sql-query" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 h-80 max-h-80 overflow-y-auto" placeholder="Paste your SQL query here"></textarea>
+
+                <!-- <textarea id="sql-query" class="p-4 border rounded-lg font-mono bg-gray-800 text-white w-full resize-none h-80 max-h-80 overflow-y-auto" placeholder="Paste your SQL query here"></textarea> -->
+            </div>
+            
+          </div>
+      
+          <!-- Arrow Button (Middle Div) -->
+          <div class="flex justify-center items-center">
+            <button id="convert-btn" class="text-white p-4 rounded-full transition relative w-12 h-12"
+            style="background-image: url('{% static 'assets/img/icons/arrow-btn.png' %}'); background-size: cover;
+                   background-position: center;"
+            onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 4px 15px rgba(0, 0, 0, 0.2)'"
+            onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none'" onclick="convertQueryToTable()">
+    </button>
+    
+          </div>
+      
+          <!-- Right Div -->
+          <div id="right-div" class="bg-gray-200 p-4 rounded shadow text-center max-h-[calc(100vh-2rem)] overflow-y-auto">
+            <div class="table-container mt-6 text-left" id="tables-container">
+              <!-- <button onclick="addNewTable()" class="text-gray-900 hover:text-white border border-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800">Add New Table</button> -->
+
+              <!-- Example Table with Delete Button -->
+              <!-- <div class="table-component" id="table-1">
+                  <div class="flex justify-between items-center mb-2">
+                      <label class="text-xl font-semibold mb-2" contenteditable="true">Table 1</label>
+                      <button onclick="deleteTable('table-1')" class="text-red-500 hover:text-white border border-red-500 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mb-2">Delete Table</button>
+                  </div>
+ 
+                  <div class="overflow-x-auto overflow-y-auto relative shadow-md sm:rounded-lg">
+                        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400" id="table-1-element">
+                          <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                            <tr>
+                              <th scope="col" class="px-6 py-3">
+                                <div class="flex justify-between items-center">
+                                  <span contenteditable>ID</span>
+                                  <button onclick="deleteColumn('table-1-element', this.closest('th'), this)">
+                                    <img src="{% static '/assets/img/icons/x-mark.png' %}" class="w-4 h-4 icon-image" alt="Delete">
+                                  </button>
+                                </div>
+                              </th>
+                              <th scope="col" class="px-6 py-3">
+                                <div class="flex justify-between items-center">
+                                  <span contenteditable>Name</span>
+                                  <button onclick="deleteColumn('table-1-element', this.closest('th'), this)">
+                                    <img src="{% static '/assets/img/icons/x-mark.png' %}" class="w-4 h-4 icon-image" alt="Delete">
+                                  </button>
+                                </div>
+                              </th>
+                              <th scope="col" class="px-6 py-3">
+                                <div class="flex justify-between items-center">
+                                  <span contenteditable>Price</span>
+                                  <button onclick="deleteColumn('table-1-element', this.closest('th'), this)">
+                                    <img src="{% static '/assets/img/icons/x-mark.png' %}" class="w-4 h-4 icon-image" alt="Delete">
+                                  </button>
+                                </div>
+                              </th>
+                              <th scope="col" class="px-6 py-3">Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody id="table-1-body">
+                            <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
+                                <td class="px-6 py-4">
+                                    <input type="text" value="Magic Mouse 2" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+                                </td>
+                                <td class="px-6 py-4">
+                                    <input type="text" value="Black" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+                                </td>
+                                <td class="px-6 py-4">
+                                    <input type="text" value="Accessories" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+                                </td>
+                                <td class="px-6 py-4">
+                                    <button onclick="deleteRow(this)">
+                                        <img src="{% static '/assets/img/icons/bin.png' %}" class="w-4 h-4 icon-image" alt="Delete">
+                                       </button>
+                                </td>
+        
+                            </tr>
+                          </tbody>
+                        </table>
+                      
+                  </div>
+                  
+          
+                  <div class="flex space-x-2 mt-3">
+                      <button onclick="addRow('table-1-element','table-1-body')" class="text-purple-700 hover:text-white border border-purple-700 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Add Row</button>
+                      <button onclick="addColumn('table-1')" class="text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Add Column</button>
+                  </div>
+              </div> -->
+          </div>
+        </div>
+      </section>
+      
+
+      <!-- Second Section -->
+      <section class="bg-white p-4 rounded shadow">
+        <div class="space-y-4">
+            <!-- SQL Result Label -->
+            <div>
+                <label for="sql-result" class="text-lg font-semibold text-gray-700">SQL Result</label>
+            </div>
+    
+            <!-- SQL Result Textarea -->
+            <div class="relative">
+                <textarea id="sql-result" class="p-4 border border-gray-300 rounded-lg font-mono bg-gray-100 text-gray-800 w-full h-40 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 text-left" placeholder="Enter SQL result here...">
+                -- Example SQL Result will be displayed here
+                </textarea>
+                <!-- Copy Button -->
+                <button onclick="copyToClipboard()" class="absolute top-1 right-2 bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    Copy
+                </button>
+            </div>
+        </div>
+    </section>
+  </main>
+  <!-- Footer -->
+  <footer class="bg-gray-800 text-white p-4 text-center">
+      &copy; 2024 My Website. All rights reserved.
+  </footer>
+</body>
+</html>
